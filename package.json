@@ -1,0 +1,20 @@
+{
+  "name": "movies-catalog",
+  "version": "1.0.0",
+  "description": "Application for creating lists of movies and series (with ratings, favorite lists etc.), based on using a third party service http://www.omdbapi.com.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kivanchuk/movies-catalog.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kivanchuk/movies-catalog/issues"
+  },
+  "homepage": "https://github.com/kivanchuk/movies-catalog#readme"
+}
