@@ -55,3 +55,12 @@ Make POST request, you should see the JSON data inside server tab, and you shoul
 ```
 curl http://localhost:3000 -X POST --data '@data.json'
 ```
+
+## Logger
+
+To test the logger, run some curls and check `logger.log` file:
+
+```
+curl http://localhost:3000 -X GET
+curl http://localhost:3000 -X POST --data '@data.json'
+```
