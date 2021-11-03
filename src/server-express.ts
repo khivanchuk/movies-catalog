@@ -12,10 +12,6 @@ app.use((req: any, res: any, next: (arg?: any) => void) => {
   next();
 });
 
-app.use((err: any, req: any, res: any, next: (arg?: any) => void) => {
-  res.status(HTTP_SERVER_ERROR).send("Error found");
-});
-
 app.get("/", (req, res) => {
   const readStream = createReadStream("data.json");
 
@@ -32,4 +28,14 @@ app.post("/", (req, res) => {
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}.`);
+});
+
+process.on("uncaughtException", (err, origin) => {
+  console.error(err);
+  console.log(origin);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error(reason);
+  console.log(promise);
 });
