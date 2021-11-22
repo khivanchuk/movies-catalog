@@ -9,3 +9,5 @@ export const paginate: any = (
 ) => {
   return arr.slice((pageNumber - 1) * pageSize, pageNumber * pageSize);
 };
+
+export const generateId = () => Math.random().toString(36).substr(2, 9);

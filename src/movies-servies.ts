@@ -1,5 +1,5 @@
 import logger from "./logger";
-import { sortByField, paginate } from "./utils";
+import { sortByField, paginate, generateId } from "./utils";
 import { getOMDBMovie } from "./omdb-service";
 
 const moviesDB: any = {};
@@ -12,23 +12,23 @@ export const addMovie = async (req: any, res: any) => {
     message: "add movie",
   });
 
-  const title: string = req.body.title;
+  const name: string = req.body.name;
 
-  if (!title) {
-    return res.send({ error: "Title is required!" });
+  if (!name) {
+    return res.send({ error: "Name is required!" });
   }
-  const { status, data }: any = await getOMDBMovie(title);
-  const id: number = new Date().getUTCMilliseconds();
+  const { status, data }: any = await getOMDBMovie(name);
+  const id: string = generateId();
   const comment: string = req.body.comment || null;
   const personalScore: number = req.body.personalScore || null;
 
   if (status === 200 && !data.Error) {
-    moviesDB[id] = { ...data, comment, personalScore };
+    moviesDB[id] = { ...data, comment, personalScore, id };
   } else {
-    moviesDB[id] = { title, comment, personalScore };
+    moviesDB[id] = { name, comment, personalScore, id };
   }
   console.log(moviesDB);
-  res.send({ status: "success" });
+  res.send({ data: moviesDB[id] });
 };
 
 export const updateMovie = (req: any, res: any) => {
@@ -63,7 +63,7 @@ export const updateMovie = (req: any, res: any) => {
     moviesDB[id] = { ...moviesDB[id], personalScore };
   }
   console.log(moviesDB);
-  res.send({ status: "success" });
+  res.send({ data: moviesDB[id] });
 };
 
 export const deleteMovie = (req: any, res: any) => {
