@@ -44,23 +44,49 @@ The expected result should be:
 Server is listening on port 3000.
 ```
 
-Make GET request, you should get big JSON back:
+### API Example
+
+Create movie:
 
 ```
-curl http://localhost:3000 -X GET
+POST 127.0.0.1:3000/movies
+
+body: {
+   "title": "title",
+   "comment": "comment",
+   "personalScore": 10
+}
 ```
 
-Make POST request, you should see the JSON data inside server tab, and you should get big JSON back:
+Update movie:
 
 ```
-curl http://localhost:3000 -X POST --data '@data.json'
+PATCH 127.0.0.1:3000/movies/:id
+
+body: {
+   "comment": "comment updated",
+   "personalScore": 20
+}
+```
+
+Delete movie:
+
+```
+DELETE 127.0.0.1:3000/movies/:id
+```
+
+Get movie:
+
+```
+GET 127.0.0.1:3000/movies/:id
+```
+
+Get all movies:
+
+```
+GET 127.0.0.1:3000/movies?sortBy=personalScore&pageSize=2&pageNumber=1
 ```
 
 ## Logger
 
-To test the logger, run some curls and check `logger.log` file:
-
-```
-curl http://localhost:3000 -X GET
-curl http://localhost:3000 -X POST --data '@data.json'
-```
+To test the logger, run some requests and check `logger.log` file:
