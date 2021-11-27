@@ -1,8 +1,8 @@
 import logger from "./logger";
 import { sortByField, paginate, generateId } from "./utils";
 import { getOMDBMovie } from "./omdb-service";
-
-const moviesDB: any = {};
+import { moviesCatalogDB } from "./movies-db";
+import { RequestWithUser, User } from "./auth-service";
 
 export const addMovie = async (req: any, res: any) => {
   logger.info({
@@ -23,12 +23,12 @@ export const addMovie = async (req: any, res: any) => {
   const personalScore: number = req.body.personalScore || null;
 
   if (status === 200 && !data.Error) {
-    moviesDB[id] = { ...data, comment, personalScore, id };
+    moviesCatalogDB.movies[id] = { ...data, comment, personalScore, id };
   } else {
-    moviesDB[id] = { name, comment, personalScore, id };
+    moviesCatalogDB.movies[id] = { name, comment, personalScore, id };
   }
-  console.log(moviesDB);
-  res.send({ data: moviesDB[id] });
+  console.log(moviesCatalogDB.movies);
+  res.send({ data: moviesCatalogDB.movies[id] });
 };
 
 export const updateMovie = (req: any, res: any) => {
@@ -45,7 +45,7 @@ export const updateMovie = (req: any, res: any) => {
   if (!id) {
     return res.send({ error: "Bad request!" });
   }
-  const movieToUpdate = { ...moviesDB[id] };
+  const movieToUpdate = { ...moviesCatalogDB.movies[id] };
 
   if (!movieToUpdate) {
     return res.send({ error: "Movie does not exist!" });
@@ -57,13 +57,16 @@ export const updateMovie = (req: any, res: any) => {
     return res.send({ message: "Nothing to update!" });
   }
   if (comment !== undefined) {
-    moviesDB[id] = { ...moviesDB[id], comment };
+    moviesCatalogDB.movies[id] = { ...moviesCatalogDB.movies[id], comment };
   }
   if (personalScore !== undefined) {
-    moviesDB[id] = { ...moviesDB[id], personalScore };
+    moviesCatalogDB.movies[id] = {
+      ...moviesCatalogDB.movies[id],
+      personalScore,
+    };
   }
-  console.log(moviesDB);
-  res.send({ data: moviesDB[id] });
+  console.log(moviesCatalogDB.movies);
+  res.send({ data: moviesCatalogDB.movies[id] });
 };
 
 export const deleteMovie = (req: any, res: any) => {
@@ -79,16 +82,16 @@ export const deleteMovie = (req: any, res: any) => {
   if (!id) {
     return res.send({ error: "Bad request!" });
   }
-  if (!moviesDB[id]) {
+  if (!moviesCatalogDB.movies[id]) {
     return res.send({ error: "Movie does not exist!" });
   }
-  delete moviesDB[id];
+  delete moviesCatalogDB.movies[id];
 
-  console.log(moviesDB);
+  console.log(moviesCatalogDB.movies);
   res.send({ status: "success" });
 };
 
-export const getAllMovies = (req: any, res: any) => {
+export const getAllMovies = (req: RequestWithUser, res: any) => {
   logger.info({
     request_id: req.id,
     url: req.url,
@@ -97,7 +100,7 @@ export const getAllMovies = (req: any, res: any) => {
   });
 
   const { sortBy, pageSize, pageNumber } = req.query;
-  let moviesList = Object.values(moviesDB);
+  let moviesList = Object.values(moviesCatalogDB.movies);
 
   if (sortBy) {
     moviesList = sortByField(moviesList, sortBy);
@@ -105,7 +108,20 @@ export const getAllMovies = (req: any, res: any) => {
   if (pageSize && pageNumber) {
     moviesList = paginate(moviesList, pageSize, pageNumber);
   }
-  res.send({ movies: moviesList });
+  if (!req.user) {
+    return res.send({ movies: moviesList });
+  }
+
+  const user = moviesCatalogDB.users.find(
+    (user: User) => user.name === req.user.name
+  );
+  if (!user) {
+    return res.send({ error: "User not found!" });
+  }
+  return res.send({
+    movies: moviesList,
+    favMovies: Object.values(user.favMovies),
+  });
 };
 
 export const getMovie = (req: any, res: any) => {
@@ -121,9 +137,40 @@ export const getMovie = (req: any, res: any) => {
   if (!id) {
     return res.send({ error: "Bad request!" });
   }
-  if (!moviesDB[id]) {
+  if (!moviesCatalogDB.movies[id]) {
     return res.send({ error: "Movie does not exist!" });
   }
-  console.log(moviesDB);
-  res.send({ movie: moviesDB[id] });
+  console.log(moviesCatalogDB.movies);
+  res.send({ movie: moviesCatalogDB.movies[id] });
+};
+
+export const markFavourite = (req: any, res: any) => {
+  logger.info({
+    request_id: req.id,
+    url: req.url,
+    params: req.params,
+    message: "mark movie as favourite",
+  });
+
+  const id: number = req.params.id;
+  if (!id) {
+    return res.send({ error: "Bad request!" });
+  }
+
+  const movieToMark = { ...moviesCatalogDB.movies[id] };
+  if (!movieToMark) {
+    return res.send({ error: "Movie does not exist!" });
+  }
+
+  const user = moviesCatalogDB.users.find(
+    (user: User) => user.name === req.user.name
+  );
+  if (!user) {
+    return res.send({ error: "User not found!" });
+  }
+
+  user.favMovies[movieToMark.id] = { ...movieToMark };
+
+  console.log(user.favMovies);
+  res.send({ data: user.favMovies[movieToMark.id] });
 };

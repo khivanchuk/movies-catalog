@@ -21,8 +21,10 @@
   "homepage": "https://github.com/kivanchuk/movies-catalog#readme",
   "devDependencies": {
     "@types/axios": "^0.14.0",
+    "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/express-pino-logger": "^4.0.2",
+    "@types/jsonwebtoken": "^8.5.6",
     "@types/node": "^16.11.6",
     "@types/pino": "^6.3.12",
     "ts-node": "^10.4.0",
@@ -30,8 +32,10 @@
   },
   "dependencies": {
     "axios": "^0.24.0",
+    "bcrypt": "^5.0.1",
     "express": "^4.17.1",
     "express-pino-logger": "^6.0.0",
+    "jsonwebtoken": "^8.5.1",
     "pino": "^7.1.0"
   }
 }

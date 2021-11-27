@@ -8,7 +8,9 @@ import {
   deleteMovie,
   getAllMovies,
   getMovie,
+  markFavourite,
 } from "./movies-servies";
+import { authRouter, authMiddleware, authOnly } from "./auth-service";
 
 const app = express();
 const port = 3000;
@@ -36,17 +38,23 @@ const errorHandler = (
 };
 
 app.use(express.json());
+
 app.use(loggerMiddleware);
+app.use(authMiddleware);
 
-app.post("/movies", addMovie);
+app.use("/auth", authRouter);
 
-app.patch("/movies/:id", updateMovie);
+app.post("/movies", authOnly, addMovie);
 
-app.delete("/movies/:id", deleteMovie);
+app.patch("/movies/:id", authOnly, updateMovie);
+
+app.delete("/movies/:id", authOnly, deleteMovie);
 
 app.get("/movies", getAllMovies);
 
 app.get("/movies/:id", getMovie);
+
+app.post("/markFavourite/:id", authOnly, markFavourite);
 
 app.use(errorHandler);
 
