@@ -44,7 +44,23 @@ The expected result should be:
 Server is listening on port 3000.
 ```
 
-### API Example
+## API Example
+
+Registration:
+
+```
+POST 127.0.0.1:3000/auth/registration
+
+```
+
+Login:
+
+```
+POST 127.0.0.1:3000/auth/login
+
+```
+
+### User needs to be authorized to be able to create, update, delete movie, add movie to favourites
 
 Create movie:
 
@@ -79,6 +95,12 @@ Get movie:
 
 ```
 GET 127.0.0.1:3000/movies/:id
+```
+
+Add movie to favourites:
+
+```
+127.0.0.1:3000/markFavourite/:id
 ```
 
 Get all movies:
