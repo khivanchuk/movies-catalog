@@ -1,5 +1,5 @@
 import express from "express";
-import jsonwebtoken, { Algorithm, SignOptions } from "jsonwebtoken";
+import jsonwebtoken, { Algorithm, SignOptions, JwtPayload } from "jsonwebtoken";
 import fs from "fs";
 import { moviesCatalogDB } from "./movies-db";
 import bcrypt from "bcrypt";
@@ -17,8 +17,7 @@ const encrypt = (data: any) =>
   jsonwebtoken.sign({ payload: data }, privateKey, options);
 
 const decrypt = (token: any) =>
-  // @ts-ignore
-  jsonwebtoken.verify(token, publicKey, options).payload;
+  (jsonwebtoken.verify(token, publicKey, options) as JwtPayload).payload;
 
 const hashedPassword = (pass: any) => bcrypt.hashSync(pass, 10);
 
@@ -31,8 +30,8 @@ export interface User {
 }
 
 export type RequestWithUser = express.Request & { user: User };
-// @ts-ignore
-export const authRouter = new express.Router();
+
+export const authRouter = express.Router();
 
 authRouter.post("/registration", (req: any, res: any) => {
   const { name, pass } = req.body;
